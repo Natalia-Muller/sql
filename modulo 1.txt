@@ -1,0 +1,164 @@
+--Exercícios do curso de SQL da FGV
+--Declaro que fiz cada exercício manualmente, sem consulta em IA.
+
+--Módulo 1 Unidade 1
+
+SELECT *                       
+FROM life_expectancy
+WHERE tot_years = 36.5 AND country = 'Chile';
+
+
+SELECT Date, "Close" 
+FROM petrobras 
+WHERE Date = '2022-12-14';
+
+
+SELECT *
+FROM gdp_pc 
+WHERE gdp_pc < 400;
+
+
+SELECT *
+FROM life_expectancy
+WHERE tot_years > 94;
+
+
+SELECT "Close", "Adj Close", Date 
+FROM petrobras 
+WHERE "Close" <> "Adj Close" AND Date = "2000-08-16";
+
+--Módulo 1 Unidade 2
+
+SELECT *
+FROM gdp_pc 
+WHERE gdp_pc IS NULL;
+
+
+SELECT *
+FROM child_mortality
+WHERE tot_deaths IS NULL;
+
+
+SELECT *
+FROM child_mortality
+WHERE tot_deaths BETWEEN 19 AND 21
+	AND country = 'Brazil';
+
+
+SELECT *
+FROM life_expectancy
+WHERE ref_year BETWEEN '2019' AND '2023'
+	AND country = 'Brazil';
+
+
+SELECT *
+FROM population
+WHERE tot_pop > 2e8
+	AND ref_year = '2023';
+
+
+SELECT *
+FROM co2_emissions_pc
+WHERE ref_year BETWEEN '2019' AND '2021'
+	AND country IN ('Brazil', 'China', 'USA');
+
+
+SELECT *
+FROM country 
+WHERE eight_regions IN ('europe_east', 'europe_west')
+	AND wb4income = 'Lower middle income';
+
+
+SELECT * 
+FROM co2_emissions_pc
+WHERE country IN ('Brazil', 'China', 'USA')
+	AND ref_year BETWEEN '2019' AND '2021';
+
+
+SELECT country, eight_regions, wb_regions 
+FROM country 
+WHERE eight_regions IN ('east_asia_pacific', 'asia_west');
+
+
+SELECT country, eight_regions, wb_regions 
+FROM country 
+WHERE wb_regions LIKE '%America%';
+
+
+-- Módulo 1 Unidade 3
+
+SELECT *
+FROM gdp_pc
+WHERE ref_year = '2009'
+ORDER BY gdp_pc 
+
+
+SELECT *
+FROM avg_income
+WHERE ref_year = '2009'
+ORDER BY mean_usd;
+
+
+SELECT *
+FROM fertility
+WHERE ref_year = '2009'
+ORDER BY mean_babies DESC;
+
+
+SELECT *
+FROM child_mortality
+WHERE ref_year = '2009'
+ORDER BY tot_deaths DESC;
+
+
+SELECT *
+FROM women_years_at_school
+WHERE ref_year = '2009'
+ORDER BY mean_years;
+
+
+SELECT *
+FROM gdp_pc 
+WHERE ref_year = '2009'
+ORDER BY gdp_pc;
+
+
+SELECT *
+FROM life_expectancy
+WHERE ref_year = '2009'
+ORDER BY tot_years
+LIMIT 6;
+
+
+SELECT DISTINCT wb4income
+FROM country;
+
+
+SELECT DISTINCT country
+FROM population
+ORDER BY country DESC
+LIMIT 5;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
