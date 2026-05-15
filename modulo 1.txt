@@ -1,0 +1,339 @@
+--Exercícios do curso de SQL da FGV
+--Declaro que fiz cada exercício manualmente, sem consulta em IA.
+
+--Módulo 1 Unidade 1
+
+SELECT *                       
+FROM life_expectancy
+WHERE tot_years = 36.5 AND country = 'Chile';
+
+
+SELECT Date, "Close" 
+FROM petrobras 
+WHERE Date = '2022-12-14';
+
+
+SELECT *
+FROM gdp_pc 
+WHERE gdp_pc < 400;
+
+
+SELECT *
+FROM life_expectancy
+WHERE tot_years > 94;
+
+
+SELECT "Close", "Adj Close", Date 
+FROM petrobras 
+WHERE "Close" <> "Adj Close" AND Date = "2000-08-16";
+
+--Módulo 1 Unidade 2
+
+SELECT *
+FROM gdp_pc 
+WHERE gdp_pc IS NULL;
+
+
+SELECT *
+FROM child_mortality
+WHERE tot_deaths IS NULL;
+
+
+SELECT *
+FROM child_mortality
+WHERE tot_deaths BETWEEN 19 AND 21
+	AND country = 'Brazil';
+
+
+SELECT *
+FROM life_expectancy
+WHERE ref_year BETWEEN '2019' AND '2023'
+	AND country = 'Brazil';
+
+
+SELECT *
+FROM population
+WHERE tot_pop > 2e8
+	AND ref_year = '2023';
+
+
+SELECT *
+FROM co2_emissions_pc
+WHERE ref_year BETWEEN '2019' AND '2021'
+	AND country IN ('Brazil', 'China', 'USA');
+
+
+SELECT *
+FROM country 
+WHERE eight_regions IN ('europe_east', 'europe_west')
+	AND wb4income = 'Lower middle income';
+
+
+SELECT * 
+FROM co2_emissions_pc
+WHERE country IN ('Brazil', 'China', 'USA')
+	AND ref_year BETWEEN '2019' AND '2021';
+
+
+SELECT country, eight_regions, wb_regions 
+FROM country 
+WHERE eight_regions IN ('east_asia_pacific', 'asia_west');
+
+
+SELECT country, eight_regions, wb_regions 
+FROM country 
+WHERE wb_regions LIKE '%America%';
+
+
+-- Módulo 1 Unidade 3
+
+SELECT *
+FROM gdp_pc
+WHERE ref_year = '2009'
+ORDER BY gdp_pc 
+
+
+SELECT *
+FROM avg_income
+WHERE ref_year = '2009'
+ORDER BY mean_usd;
+
+
+SELECT *
+FROM fertility
+WHERE ref_year = '2009'
+ORDER BY mean_babies DESC;
+
+
+SELECT *
+FROM child_mortality
+WHERE ref_year = '2009'
+ORDER BY tot_deaths DESC;
+
+
+SELECT *
+FROM women_years_at_school
+WHERE ref_year = '2009'
+ORDER BY mean_years;
+
+
+SELECT *
+FROM gdp_pc 
+WHERE ref_year = '2009'
+ORDER BY gdp_pc;
+
+
+SELECT *
+FROM life_expectancy
+WHERE ref_year = '2009'
+ORDER BY tot_years
+LIMIT 6;
+
+
+SELECT DISTINCT wb4income
+FROM country;
+
+
+SELECT DISTINCT country
+FROM population
+ORDER BY country DESC
+LIMIT 5;
+
+
+--Módulo 2 Unidade 1
+
+--Utilizando a tabela country, o campo four_regions igual a asia e a tabela man_years_at_school, 
+--encontre os cinco países asiáticos cujos homens de 25 anos passaram menos tempo na escola em 2009.
+SELECT c.four_regions, c.country, my.mean_years, my.ref_year 
+FROM country c
+JOIN men_years_at_school my ON c.country = my.country 
+WHERE c.four_regions = 'asia' AND my.ref_year = '2009'
+ORDER BY my.mean_years
+LIMIT 5;
+
+
+SELECT c.country, c.wb_regions, ai.mean_usd, c.wb3income
+FROM avg_income ai
+JOIN country c ON c.country = ai.country 
+WHERE ai.ref_year = '1985'
+ORDER BY ai.mean_usd DESC 
+LIMIT 10;
+
+
+SELECT ai.country, ai.ref_year, p.tot_pop, ai.mean_usd, gp.gdp_pc, cm.tot_deaths, f.mean_babies, le.tot_years 
+FROM avg_income ai 
+JOIN population p ON ai.country = p.country AND ai.ref_year = p.ref_year 
+JOIN gdp_pc gp ON ai.country = gp.country AND ai.ref_year = gp.ref_year 
+JOIN child_mortality cm ON ai.country = cm.country AND ai.ref_year = cm.ref_year 
+JOIN fertility f ON ai.country = f.country AND ai.ref_year = f.ref_year
+JOIN life_expectancy le ON ai.country = le.country AND ai.ref_year = le.ref_year 
+WHERE ai.country = 'Brazil' 
+	AND ai.ref_year LIKE '%0' AND (ai.ref_year BETWEEN '1900' AND '2020');
+
+
+SELECT c.four_regions, c.country, my.mean_years, my.ref_year 
+FROM country c 
+NATURAL JOIN men_years_at_school my
+WHERE c.four_regions = 'asia' AND my.ref_year = '2009'
+ORDER BY my.mean_years
+LIMIT 5;
+
+
+SELECT ai.country, ai.ref_year, p.tot_pop, ai.mean_usd, gp.gdp_pc, cm.tot_deaths, f.mean_babies, le.tot_years 
+FROM avg_income ai 
+NATURAL JOIN population p 
+NATURAL JOIN gdp_pc gp 
+NATURAL JOIN child_mortality cm 
+NATURAL JOIN fertility f 
+NATURAL JOIN life_expectancy le
+WHERE ai.country = 'Brazil' 
+	AND ai.ref_year LIKE '%0' AND (ai.ref_year BETWEEN '1900' AND '2020');
+
+
+--Módulo 2 Unidade 2 
+SELECT cm.country, cm.ref_year, cm.tot_deaths, f.mean_babies 
+FROM child_mortality cm 
+LEFT JOIN fertility f ON f.country = cm.country AND f.ref_year = cm.ref_year 
+WHERE cm.ref_year = '2000'
+  AND cm.country IN ('Andorra', 'Liechtenstein', 'Malta', 'Monaco', 'San Marino', 'Holy See');
+
+
+SELECT cm.country, p.tot_pop, cm.tot_deaths, f.mean_babies
+FROM child_mortality cm 
+LEFT JOIN fertility f ON f.country = cm.country AND f.ref_year = cm.ref_year 
+LEFT JOIN population p ON p.country = cm.country AND p.ref_year = cm.ref_year 
+WHERE cm.ref_year = '2000'
+  AND cm.country IN ('Andorra', 'Liechtenstein', 'Malta', 'Monaco', 'San Marino', 'Holy See');
+
+
+SELECT cm.country, p.tot_pop, cm.tot_deaths, f.mean_babies
+FROM child_mortality cm 
+LEFT JOIN fertility f ON f.country = cm.country AND f.ref_year = cm.ref_year 
+INNER JOIN population p ON p.country = cm.country AND p.ref_year = cm.ref_year 
+WHERE cm.ref_year = '2000'
+  AND cm.country IN ('Andorra', 'Liechtenstein', 'Malta', 'Monaco', 'San Marino', 'Holy See');
+
+
+SELECT f.country, cm.tot_deaths, f.mean_babies
+FROM fertility f
+RIGHT JOIN child_mortality cm ON f.country = cm.country AND f.ref_year = cm.ref_year 
+WHERE cm.ref_year = '2000'
+  AND cm.country IN ('Andorra', 'Liechtenstein', 'Malta', 'Monaco', 'San Marino', 'Holy See');
+
+
+SELECT f.country, cm.country, cm.tot_deaths, f.mean_babies
+FROM fertility f 
+FULL JOIN child_mortality cm ON cm.country = f.country AND cm.ref_year = f.ref_year 
+WHERE (cm.ref_year = '2000' OR f.ref_year = '2000')
+  AND (f.country IN ('Aruba', 'Cuba', 'Dominica', 'Martinique', 'Puerto Rico') 
+       OR cm.country IN ('Aruba', 'Cuba', 'Dominica', 'Martinique', 'Puerto Rico'));
+
+
+--Módulo 2 Unidade 3
+SELECT my.country, my.mean_years, 'male' AS gender
+FROM men_years_at_school my
+WHERE my.country IN ('Brazil', 'Russia', 'India', 'China', 'South Africa')
+  AND my.ref_year = '2000'
+UNION 
+SELECT wy.country, wy.mean_years, 'female' AS gender
+FROM women_years_at_school wy
+WHERE wy.country IN ('Brazil', 'Russia', 'India', 'China', 'South Africa')
+  AND wy.ref_year = '2000';
+
+
+SELECT cm.country 
+FROM child_mortality cm 
+EXCEPT 
+SELECT f.country
+FROM fertility f;
+
+
+SELECT p.country
+FROM population p
+EXCEPT
+SELECT c.country 
+FROM country c;
+
+
+SELECT co2.country, co2.ref_year
+FROM co2_emissions_pc co2
+WHERE co2.country = 'Brazil'
+  AND co2.ref_year >= '2000'
+EXCEPT 
+SELECT my.country, my.ref_year
+FROM men_years_at_school my
+WHERE my.country = 'Brazil'
+  AND my.ref_year >= '2000';
+
+
+SELECT co2.country
+FROM co2_emissions_pc co2
+INTERSECT 
+SELECT my.country 
+FROM men_years_at_school my;
+
+
+-- Módulo 3 Unidade 1
+SELECT p.Date, (p."Close" + p."Open")/2 AS mean, (p."Close" - p."Open" ) AS range
+FROM petrobras p 
+WHERE Date BETWEEN '2020-02-20' AND '2020-03-20'
+  AND mean >= 0
+  AND range	>= 0;
+
+
+SELECT DISTINCT wy.country
+FROM women_years_at_school wy
+JOIN men_years_at_school my ON my.country = wy.country AND my.ref_year = wy.ref_year 
+JOIN country c ON c.country = wy.country 
+WHERE wy.ref_year BETWEEN '2001' AND '2010'
+  AND wy.mean_years - my.mean_years >= 1
+  AND c.four_regions = 'africa';
+
+
+SELECT cm.country, cm.ref_year, (cm.tot_deaths/p.tot_pop)*100 AS '% mortes'
+FROM child_mortality cm 
+JOIN population p ON p.country = cm.country AND p.ref_year = cm.ref_year 
+WHERE cm.country = 'Brazil' 
+	AND cm.ref_year LIKE '%0' AND (cm.ref_year BETWEEN '1900' AND '2020');
+
+
+SELECT MIN(le.tot_years ) AS 'idade minima', MAX(le.tot_years) AS 'idade maxima', 
+       ROUND(AVG(le.tot_years), 2) AS 'idade media'
+FROM life_expectancy le 
+JOIN country c ON c.country = le.country
+WHERE c.wb_regions = 'Latin America & Caribbean'
+  AND le.ref_year = '1990';
+
+
+SELECT ROUND(AVG(gp.gdp_pc), 2) AS 'PIB medio', ROUND(AVG(ai.mean_usd), 2) AS 'Renda media'
+FROM avg_income ai 
+JOIN gdp_pc gp ON gp.country = ai.country AND gp.ref_year = ai.ref_year 
+WHERE ai.ref_year = '2019';
+
+
+SELECT ROUND((AVG(my.mean_years - wy.mean_years)), 2) AS diferenca
+FROM men_years_at_school my
+JOIN women_years_at_school wy ON wy.country = my.country AND my.ref_year = wy.ref_year 
+WHERE my.ref_year = '2000';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
