@@ -1,0 +1,131 @@
+--Módulo 2 Unidade 1
+
+--Utilizando a tabela country, o campo four_regions igual a asia e a tabela man_years_at_school, 
+--encontre os cinco países asiáticos cujos homens de 25 anos passaram menos tempo na escola em 2009.
+SELECT c.four_regions, c.country, my.mean_years, my.ref_year 
+FROM country c
+JOIN men_years_at_school my ON c.country = my.country 
+WHERE c.four_regions = 'asia' AND my.ref_year = '2009'
+ORDER BY my.mean_years
+LIMIT 5;
+
+
+SELECT c.country, c.wb_regions, ai.mean_usd, c.wb3income
+FROM avg_income ai
+JOIN country c ON c.country = ai.country 
+WHERE ai.ref_year = '1985'
+ORDER BY ai.mean_usd DESC 
+LIMIT 10;
+
+
+SELECT ai.country, ai.ref_year, p.tot_pop, ai.mean_usd, gp.gdp_pc, cm.tot_deaths, f.mean_babies, le.tot_years 
+FROM avg_income ai 
+JOIN population p ON ai.country = p.country AND ai.ref_year = p.ref_year 
+JOIN gdp_pc gp ON ai.country = gp.country AND ai.ref_year = gp.ref_year 
+JOIN child_mortality cm ON ai.country = cm.country AND ai.ref_year = cm.ref_year 
+JOIN fertility f ON ai.country = f.country AND ai.ref_year = f.ref_year
+JOIN life_expectancy le ON ai.country = le.country AND ai.ref_year = le.ref_year 
+WHERE ai.country = 'Brazil' 
+	AND ai.ref_year LIKE '%0' AND (ai.ref_year BETWEEN '1900' AND '2020');
+
+
+SELECT c.four_regions, c.country, my.mean_years, my.ref_year 
+FROM country c 
+NATURAL JOIN men_years_at_school my
+WHERE c.four_regions = 'asia' AND my.ref_year = '2009'
+ORDER BY my.mean_years
+LIMIT 5;
+
+
+SELECT ai.country, ai.ref_year, p.tot_pop, ai.mean_usd, gp.gdp_pc, cm.tot_deaths, f.mean_babies, le.tot_years 
+FROM avg_income ai 
+NATURAL JOIN population p 
+NATURAL JOIN gdp_pc gp 
+NATURAL JOIN child_mortality cm 
+NATURAL JOIN fertility f 
+NATURAL JOIN life_expectancy le
+WHERE ai.country = 'Brazil' 
+	AND ai.ref_year LIKE '%0' AND (ai.ref_year BETWEEN '1900' AND '2020');
+
+
+--Módulo 2 Unidade 2 
+SELECT cm.country, cm.ref_year, cm.tot_deaths, f.mean_babies 
+FROM child_mortality cm 
+LEFT JOIN fertility f ON f.country = cm.country AND f.ref_year = cm.ref_year 
+WHERE cm.ref_year = '2000'
+  AND cm.country IN ('Andorra', 'Liechtenstein', 'Malta', 'Monaco', 'San Marino', 'Holy See');
+
+
+SELECT cm.country, p.tot_pop, cm.tot_deaths, f.mean_babies
+FROM child_mortality cm 
+LEFT JOIN fertility f ON f.country = cm.country AND f.ref_year = cm.ref_year 
+LEFT JOIN population p ON p.country = cm.country AND p.ref_year = cm.ref_year 
+WHERE cm.ref_year = '2000'
+  AND cm.country IN ('Andorra', 'Liechtenstein', 'Malta', 'Monaco', 'San Marino', 'Holy See');
+
+
+SELECT cm.country, p.tot_pop, cm.tot_deaths, f.mean_babies
+FROM child_mortality cm 
+LEFT JOIN fertility f ON f.country = cm.country AND f.ref_year = cm.ref_year 
+INNER JOIN population p ON p.country = cm.country AND p.ref_year = cm.ref_year 
+WHERE cm.ref_year = '2000'
+  AND cm.country IN ('Andorra', 'Liechtenstein', 'Malta', 'Monaco', 'San Marino', 'Holy See');
+
+
+SELECT f.country, cm.tot_deaths, f.mean_babies
+FROM fertility f
+RIGHT JOIN child_mortality cm ON f.country = cm.country AND f.ref_year = cm.ref_year 
+WHERE cm.ref_year = '2000'
+  AND cm.country IN ('Andorra', 'Liechtenstein', 'Malta', 'Monaco', 'San Marino', 'Holy See');
+
+
+SELECT f.country, cm.country, cm.tot_deaths, f.mean_babies
+FROM fertility f 
+FULL JOIN child_mortality cm ON cm.country = f.country AND cm.ref_year = f.ref_year 
+WHERE (cm.ref_year = '2000' OR f.ref_year = '2000')
+  AND (f.country IN ('Aruba', 'Cuba', 'Dominica', 'Martinique', 'Puerto Rico') 
+       OR cm.country IN ('Aruba', 'Cuba', 'Dominica', 'Martinique', 'Puerto Rico'));
+
+
+--Módulo 2 Unidade 3
+SELECT my.country, my.mean_years, 'male' AS gender
+FROM men_years_at_school my
+WHERE my.country IN ('Brazil', 'Russia', 'India', 'China', 'South Africa')
+  AND my.ref_year = '2000'
+UNION 
+SELECT wy.country, wy.mean_years, 'female' AS gender
+FROM women_years_at_school wy
+WHERE wy.country IN ('Brazil', 'Russia', 'India', 'China', 'South Africa')
+  AND wy.ref_year = '2000';
+
+
+SELECT cm.country 
+FROM child_mortality cm 
+EXCEPT 
+SELECT f.country
+FROM fertility f;
+
+
+SELECT p.country
+FROM population p
+EXCEPT
+SELECT c.country 
+FROM country c;
+
+
+SELECT co2.country, co2.ref_year
+FROM co2_emissions_pc co2
+WHERE co2.country = 'Brazil'
+  AND co2.ref_year >= '2000'
+EXCEPT 
+SELECT my.country, my.ref_year
+FROM men_years_at_school my
+WHERE my.country = 'Brazil'
+  AND my.ref_year >= '2000';
+
+
+SELECT co2.country
+FROM co2_emissions_pc co2
+INTERSECT 
+SELECT my.country 
+FROM men_years_at_school my;
