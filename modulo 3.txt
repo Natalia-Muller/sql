@@ -1,0 +1,80 @@
+--Módulo 3 Unidade 3
+SELECT gp.country, MAX(gp.gdp_pc)
+FROM gdp_pc gp 
+WHERE gp.ref_year = '2019'
+  AND gp.country IN (SELECT c.country 
+                     FROM country c 
+                     WHERE c.four_regions = 'africa');
+
+
+SELECT le.ref_year,  MIN(le.tot_years) AS minimo, MAX(le.tot_years) AS maximo, AVG(le.tot_years) AS media
+FROM life_expectancy le 
+JOIN country c ON c.country = le.country 
+WHERE le.ref_year = '1990'
+  AND c.wb_regions = 'Latin America & Caribbean'
+GROUP BY c.wb_regions, le.ref_year;
+
+SELECT le.country 
+FROM life_expectancy le
+JOIN country c ON le.country = c.country 
+WHERE le.tot_years = (
+	SELECT MIN (sle.tot_years)
+	FROM life_expectancy sle
+	JOIN country sc ON sle.country = sc.country 
+	WHERE sle.ref_year = 1990
+	AND sc.wb_regions = 'Latin America & Caribbean'
+	GROUP BY sle.ref_year)
+AND le.ref_year = '1990'
+AND c.wb_regions = 'Latin America & Caribbean';
+
+
+SELECT wb_regions, MAX(diferenca)
+FROM (SELECT c.wb_regions, ROUND((AVG(my.mean_years - wy.mean_years)), 2) AS diferenca
+		FROM men_years_at_school my
+		JOIN women_years_at_school wy ON wy.country = my.country AND my.ref_year = wy.ref_year 
+		JOIN country c ON c.country = my.country
+		WHERE my.ref_year = '2000'
+		GROUP BY c.wb_regions 
+		ORDER BY diferenca);
+
+
+SELECT ai.country, MIN(ai.mean_usd )
+FROM avg_income ai 
+JOIN country c ON c.country = ai.country 
+WHERE c.four_regions = 'europe'
+  AND ai.ref_year = '2020';
+
+
+SELECT *
+FROM (
+	SELECT m.country, m.mean_years - w.mean_years AS diff
+	FROM men_years_at_school m
+	JOIN women_years_at_school w ON m.country = w.country 
+		AND m.ref_year = w.ref_year
+	JOIN country c ON m.country = c.country 
+	WHERE w.ref_year = 2000
+	AND c.wb_regions = 'Latin America & Caribbean'
+) t1
+WHERE EXISTS
+(SELECT *
+FROM (
+	SELECT m.country, m.mean_years - w.mean_years AS diff
+	FROM men_years_at_school m
+	JOIN women_years_at_school w ON m.country = w.country 
+		AND m.ref_year = w.ref_year
+	JOIN country c ON m.country = c.country 
+	WHERE w.ref_year = 2000
+	AND c.wb_regions = 'Latin America & Caribbean'
+	GROUP BY m.country
+	) t2
+	WHERE t1.diff < t2.diff 
+AND t2.country  = 'Brazil');
+
+
+INSERT INTO men_years_at_school (ref_year, country, mean_years)
+VALUES ('2010', 'Brazil', '6,7'),
+	   ('2010', 'Argentina', '10,5');
+
+SELECT ref_year, country, mean_years
+FROM men_years_at_school myas 
+WHERE ref_year = '2010';
